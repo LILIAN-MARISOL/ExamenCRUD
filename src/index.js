@@ -40,5 +40,20 @@ app.get('/Libros/:ID', async (req, res) => {
     }
 })
 
+//d. En detalles o en otra pantalla pueda editar y guardar los cambios de este elemento
+app.put('/Libros/:ID', async (req, res) => {
+    try {
+        const {id} = req.params
+        const {ID,Titulo,Autor,Editorial, ISBN, Fecha_de_publicacion} = req.body;
+        const [resultado] = await pool.query("UPDATE Libros SET ID = IFNULL(?, ID), Titulo = IFNULL(?, Titulo), Autor = IFNULL(?, Autor), Editorial = IFNULL(?, Editorial), ISBN = IFNULL(?, ISBN), Fecha_de_publicacion = IFNULL(?, Fecha_de_publicacion) WHERE ID = ?", [Titulo,Autor,Editorial, ISBN, Fecha_de_publicacion,ID])
+
+        if (resultado.affectedRows === 0) return res.status(404).json({message: "No se encontro el libro"})
+
+        const [updated] = await pool.query("SELECT * FROM Libros WHERE ID = ?", [ID])
+        res.json(updated);
+    } catch (error) {
+        return res.status(500).json({message: "Error al realizar la consulta."})
+    }
+})
 
 app.listen(2000)
