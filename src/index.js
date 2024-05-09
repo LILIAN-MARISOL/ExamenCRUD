@@ -8,7 +8,7 @@ app.get('/', (req, res) => {
     res.send('holis')
 })
 
-// listado de elementos
+// a.listado de elementos
 app.get('/Libros', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM Libros')
@@ -18,7 +18,7 @@ app.get('/Libros', async (req, res) => {
     }
 })
 
-//creacion de elementos
+//b.creacion de elementos
 app.post('/Libros', async (req, res) => {
     try {
         const {ID,Titulo,Autor,Editorial, ISBN, Fecha_de_publicacion} = req.body;
@@ -28,4 +28,17 @@ app.post('/Libros', async (req, res) => {
         return res.status(500).json({message: 'Error al realizar la consulta'})
     }
 })
+//c.muestra de listado para seleccionar y mostrar los detalles del mismo
+app.get('/Libros/:ID', async (req, res) => {
+    try {
+        const {ID} = req.params;
+        const [rows] = await pool.query('SELECT * FROM Libros WHERE ID=?', [ID])
+        if (rows.length <= 0) return res.status(400).json({message: 'No se encontro el libro'})
+        res.json(rows)
+    } catch(error) {
+        return res.status(500).json({message: 'Error al realizar la consulta'})
+    }
+})
+
+
 app.listen(2000)
